@@ -10,6 +10,7 @@ import {
   BarChart2,
   ShoppingCart,
   ClipboardCheck,
+  UserCog,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -52,6 +53,7 @@ export default function AdminSidebar({
       { to: "/admin/inspectors", label: "Quản Lý Kiểm Định Viên", key: "inspectors", icon: ClipboardCheck },
       { to: "/admin/payments", label: "Quản Lý Thanh Toán", key: "payments", icon: CreditCard },
       { to: "/admin/reports", label: "Quản Lý Báo Cáo", key: "reports", icon: BarChart2 },
+      { to: "/admin/users", label: "Quản Lý Người Dùng", key: "users", icon: UserCog },
     ],
     [],
   );

@@ -1,8 +1,13 @@
+import { useEffect, useState } from "react";
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
-import { Banknote, ShoppingBag, Users, ClipboardCheck } from "lucide-react";
+import {
+  Banknote, ShoppingBag, Users, ClipboardCheck,
+  ListChecks, AlertTriangle, PackageCheck,
+} from "lucide-react";
+import { getAdminDashboardAPI } from "../../services/adminUserService";
 
 const MONTHLY_REVENUE = [
   { month: "T10/24", revenue: 32, orders: 12 },
@@ -30,34 +35,78 @@ const PAYMENT_METHOD = [
 const PIE_COLORS = ["#3B82F6", "#EF4444", "#F59E0B", "#10B981"];
 const BAR_COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444"];
 
-const STATS = [
-  {
-    label: "Doanh thu tháng này", value: "78.000.000₫", change: "+18%",
-    icon: Banknote, up: true,
-    bg: "bg-blue-50", iconBg: "bg-blue-100", iconColor: "text-blue-600",
-  },
-  {
-    label: "Đơn hàng", value: "30", change: "+12%",
-    icon: ShoppingBag, up: true,
-    bg: "bg-green-50", iconBg: "bg-green-100", iconColor: "text-green-600",
-  },
-  {
-    label: "Khách hàng mới", value: "22", change: "+5%",
-    icon: Users, up: true,
-    bg: "bg-purple-50", iconBg: "bg-purple-100", iconColor: "text-purple-600",
-  },
-  {
-    label: "Xe chờ kiểm định", value: "11", change: "-3%",
-    icon: ClipboardCheck, up: false,
-    bg: "bg-orange-50", iconBg: "bg-orange-100", iconColor: "text-orange-600",
-  },
-];
-
 function fmt(v: number) {
   return `${v}tr₫`;
 }
 
+function fmtCurrency(v: number) {
+  return v.toLocaleString("vi-VN") + "₫";
+}
+
+interface DashboardData {
+  totalListings: number;
+  totalUsers: number;
+  pendingDisputes: number;
+  totalCommissionRevenue: number;
+  inspectionStatistics: {
+    requested: number;
+    inspectedWaitApprove: number;
+    assigned: number;
+  };
+  totalCompletedOrders: number;
+}
+
 export default function AdminDashboard() {
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getAdminDashboardAPI()
+      .then(setData)
+      .catch(() => setData(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const stats = [
+    {
+      label: "Doanh thu hoa hồng",
+      value: loading ? "—" : fmtCurrency(data?.totalCommissionRevenue ?? 0),
+      icon: Banknote,
+      bg: "bg-blue-50", iconBg: "bg-blue-100", iconColor: "text-blue-600",
+    },
+    {
+      label: "Đơn hàng hoàn thành",
+      value: loading ? "—" : String(data?.totalCompletedOrders ?? 0),
+      icon: ShoppingBag,
+      bg: "bg-green-50", iconBg: "bg-green-100", iconColor: "text-green-600",
+    },
+    {
+      label: "Tổng người dùng",
+      value: loading ? "—" : String(data?.totalUsers ?? 0),
+      icon: Users,
+      bg: "bg-purple-50", iconBg: "bg-purple-100", iconColor: "text-purple-600",
+    },
+    {
+      label: "Tranh chấp chờ xử lý",
+      value: loading ? "—" : String(data?.pendingDisputes ?? 0),
+      icon: AlertTriangle,
+      bg: "bg-red-50", iconBg: "bg-red-100", iconColor: "text-red-500",
+    },
+    {
+      label: "Tin đăng xe",
+      value: loading ? "—" : String(data?.totalListings ?? 0),
+      icon: ListChecks,
+      bg: "bg-orange-50", iconBg: "bg-orange-100", iconColor: "text-orange-600",
+    },
+  ];
+
+  const inspectionStats = data?.inspectionStatistics;
+  const inspectionCards = [
+    { label: "Yêu cầu kiểm định", value: inspectionStats?.requested ?? 0, icon: ClipboardCheck, color: "text-blue-600", bg: "bg-blue-100" },
+    { label: "Đã phân công", value: inspectionStats?.assigned ?? 0, icon: PackageCheck, color: "text-emerald-600", bg: "bg-emerald-100" },
+    { label: "Chờ phê duyệt", value: inspectionStats?.inspectedWaitApprove ?? 0, icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-100" },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -67,21 +116,36 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {STATS.map(({ label, value, change, icon: Icon, up, bg, iconBg, iconColor }) => (
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        {stats.map(({ label, value, icon: Icon, bg, iconBg, iconColor }) => (
           <div key={label} className={`rounded-2xl border border-gray-100 p-5 ${bg}`}>
             <div className="flex items-center justify-between mb-3">
               <span className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${iconBg}`}>
                 <Icon size={20} className={iconColor} />
-              </span>
-              <span className={`text-xs font-semibold px-2 py-1 rounded-full ${up ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}>
-                {change}
               </span>
             </div>
             <div className="text-xl font-bold text-gray-900 leading-tight">{value}</div>
             <div className="text-xs text-gray-500 mt-1">{label}</div>
           </div>
         ))}
+      </div>
+
+      {/* Inspection statistics */}
+      <div className="rounded-2xl bg-white border border-gray-200 p-5">
+        <h2 className="font-semibold text-gray-900 mb-4">Thống Kê Kiểm Định</h2>
+        <div className="grid grid-cols-3 gap-4">
+          {inspectionCards.map(({ label, value, icon: Icon, color, bg }) => (
+            <div key={label} className="flex items-center gap-3 rounded-xl bg-gray-50 px-4 py-4">
+              <span className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${bg}`}>
+                <Icon size={20} className={color} />
+              </span>
+              <div>
+                <div className="text-2xl font-bold text-gray-900">{loading ? "—" : value}</div>
+                <div className="text-xs text-gray-500">{label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Revenue area chart */}
