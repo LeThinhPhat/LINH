@@ -10,6 +10,7 @@ import ManagerReport from "../components/Admin/Manager/ManagerReport";
 import ManagerBuyer from "../components/Admin/Manager/ManagerBuyer";
 import ManagerInspector from "../components/Admin/Manager/ManagerInspector";
 import ManagerUsers from "../components/Admin/Manager/ManagerUsers";
+import ManagerCategories from "../components/Admin/Manager/ManagerCategories";
 import Login from "../components/home/Login";
 import Register from "../components/home/Register";
 import SellerPage from "../components/Seller/SellerPage";
@@ -77,6 +78,7 @@ export default function AppRoutes({ user, onLogout }: AppRoutesProps) {
           <Route path="payments" element={<ManagerPayment />} />
           <Route path="reports" element={<ManagerReport />} />
           <Route path="users" element={<ManagerUsers />} />
+          <Route path="categories" element={<ManagerCategories />} />
         </Route>
       </Route>
 

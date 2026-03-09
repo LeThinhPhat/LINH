@@ -11,6 +11,7 @@ import {
   ShoppingCart,
   ClipboardCheck,
   UserCog,
+  Tag,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -54,6 +55,7 @@ export default function AdminSidebar({
       { to: "/admin/payments", label: "Quản Lý Thanh Toán", key: "payments", icon: CreditCard },
       { to: "/admin/reports", label: "Quản Lý Báo Cáo", key: "reports", icon: BarChart2 },
       { to: "/admin/users", label: "Quản Lý Người Dùng", key: "users", icon: UserCog },
+      { to: "/admin/categories", label: "Quản Lý Danh Mục", key: "categories", icon: Tag },
     ],
     [],
   );
