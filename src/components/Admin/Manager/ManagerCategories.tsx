@@ -40,6 +40,39 @@ interface CategoryModalProps {
   onSaved: () => void;
 }
 
+function CategoryTableSkeleton({ rows = 6 }: { rows?: number }) {
+  return (
+    <div className="animate-pulse">
+      <div className="border-b border-gray-100 px-5 py-3">
+        <div className="grid grid-cols-[80px_110px_minmax(180px,1.5fr)_minmax(220px,2fr)_140px_140px] gap-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="h-4 rounded bg-gray-200" />
+          ))}
+        </div>
+      </div>
+
+      <div className="divide-y divide-gray-100">
+        {Array.from({ length: rows }).map((_, index) => (
+          <div
+            key={index}
+            className="grid grid-cols-[80px_110px_minmax(180px,1.5fr)_minmax(220px,2fr)_140px_140px] items-center gap-4 px-5 py-3"
+          >
+            <div className="h-4 w-12 rounded bg-gray-100" />
+            <div className="h-10 w-10 rounded-lg bg-gray-100" />
+            <div className="h-4 w-32 rounded bg-gray-100" />
+            <div className="h-4 w-full rounded bg-gray-100" />
+            <div className="h-4 w-24 rounded bg-gray-100" />
+            <div className="flex gap-2">
+              <div className="h-4 w-10 rounded bg-gray-100" />
+              <div className="h-4 w-10 rounded bg-gray-100" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function CategoryModal({ initial, onClose, onSaved }: CategoryModalProps) {
   const [form, setForm] = useState<FormData>(
     initial ? { name: initial.name, description: initial.description, imgUrl: initial.imgUrl }
@@ -257,8 +290,17 @@ export default function ManagerCategories() {
             <Tag size={20} className="text-gray-700" />
           </span>
           <div>
-            <div className="text-xl font-bold text-gray-900">{totalElements}</div>
-            <div className="text-xs text-gray-500">Tổng danh mục</div>
+            {loading ? (
+              <>
+                <div className="h-6 w-14 rounded bg-gray-200 animate-pulse" />
+                <div className="mt-2 h-3 w-24 rounded bg-gray-100 animate-pulse" />
+              </>
+            ) : (
+              <>
+                <div className="text-xl font-bold text-gray-900">{totalElements}</div>
+                <div className="text-xs text-gray-500">Tổng danh mục</div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -277,9 +319,7 @@ export default function ManagerCategories() {
       {/* Table */}
       <div className="rounded-2xl bg-white border border-gray-200 overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center py-16 text-gray-400 text-sm">
-            Đang tải...
-          </div>
+          <CategoryTableSkeleton />
         ) : error ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
             <p className="text-red-500 text-sm">{error}</p>
