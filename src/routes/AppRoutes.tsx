@@ -15,6 +15,7 @@ import ManagerBrand from "../components/Admin/Manager/ManagerBrand";
 import ManagerComponent from "../components/Admin/Manager/ManagerComponent";
 import Login from "../components/home/Login";
 import Register from "../components/home/Register";
+import GuestLayout from "../components/home/Layout";
 import SellerPage from "../components/Seller/SellerPage";
 import InspectorPage from "../components/Inspector/InspectorPage";
 import BuyerPage from "../components/Buyer/BuyerPage";
@@ -55,14 +56,14 @@ export default function AppRoutes({ user, onLogout }: AppRoutesProps) {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Root: redirect theo role */}
+      {/* Root: redirect theo role hoặc hiển thị trang Guest */}
       <Route
         path="/"
         element={
           user ? (
             <Navigate to={ROLE_ROUTES[user.role] ?? "/login"} replace />
           ) : (
-            <Navigate to="/login" replace />
+            <GuestLayout />
           )
         }
       />

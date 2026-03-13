@@ -10,7 +10,8 @@ function authHeaders() {
 
 async function parseError(res, fallback) {
   const data = await res.json().catch(() => ({}));
-  if (res.status === 403) throw new Error("Truy cập bị từ chối (403 Access Denied).");
+  if (res.status === 403)
+    throw new Error("Truy cập bị từ chối (403 Access Denied).");
   throw new Error(data.message || fallback);
 }
 

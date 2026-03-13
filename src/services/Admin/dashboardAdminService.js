@@ -13,7 +13,8 @@ export async function getUserStatisticsAPI() {
     headers: authHeaders(),
   });
   const data = await res.json();
-  if (!res.ok || !data.success) throw new Error(data.message || "Không thể tải thống kê người dùng.");
+  if (!res.ok || !data.success)
+    throw new Error(data.message || "Không thể tải thống kê người dùng.");
   return data.data;
 }
 
@@ -22,7 +23,8 @@ export async function getRevenueStatisticsAPI() {
     headers: authHeaders(),
   });
   const data = await res.json();
-  if (!res.ok || !data.success) throw new Error(data.message || "Không thể tải thống kê doanh thu.");
+  if (!res.ok || !data.success)
+    throw new Error(data.message || "Không thể tải thống kê doanh thu.");
   return data.data;
 }
 
@@ -31,6 +33,7 @@ export async function getOrderStatisticsAPI() {
     headers: authHeaders(),
   });
   const data = await res.json();
-  if (!res.ok || !data.success) throw new Error(data.message || "Không thể tải thống kê đơn hàng.");
+  if (!res.ok || !data.success)
+    throw new Error(data.message || "Không thể tải thống kê đơn hàng.");
   return data.data;
 }
