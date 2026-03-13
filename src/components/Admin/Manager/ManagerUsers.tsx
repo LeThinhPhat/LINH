@@ -283,7 +283,7 @@ export default function ManagerUsers() {
         <button
           type="button"
           onClick={fetchUsers}
-          className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-50"
+          className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium hover:bg-blue-50"
         >
           <RefreshCw size={14} /> Làm mới
         </button>
@@ -296,8 +296,8 @@ export default function ManagerUsers() {
             key={label}
             className="rounded-2xl bg-white border border-gray-200 p-4 flex items-center gap-3"
           >
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100">
-              <Icon size={20} className="text-gray-700" />
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100">
+              <Icon size={20} className="text-blue-700" />
             </span>
             <div>
               <div className="text-xl font-bold text-gray-900">{value}</div>
@@ -377,7 +377,7 @@ export default function ManagerUsers() {
               {users.map((user) => (
                 <tr
                   key={user.id}
-                  className="border-b border-gray-50 hover:bg-gray-50"
+                  className="border-b border-gray-50 hover:bg-blue-50"
                 >
                   <td className="px-5 py-3">
                     <div className="font-medium text-gray-900">
@@ -471,7 +471,7 @@ export default function ManagerUsers() {
               type="button"
               disabled={page === 0}
               onClick={() => setPage((p) => p - 1)}
-              className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
+              className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-gray-600 hover:bg-blue-50 disabled:opacity-40"
             >
               <ChevronLeft size={14} /> Trước
             </button>
@@ -479,7 +479,7 @@ export default function ManagerUsers() {
               type="button"
               disabled={page >= totalPages - 1}
               onClick={() => setPage((p) => p + 1)}
-              className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
+              className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-gray-600 hover:bg-blue-50 disabled:opacity-40"
             >
               Sau <ChevronRight size={14} />
             </button>

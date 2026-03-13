@@ -22,17 +22,6 @@ export async function getAdminUsersAPI({ page = 0, size = 10, keyword = "", role
   return data;
 }
 
-export async function getAdminInspectorsAPI({ page = 0, size = 10 } = {}) {
-  const params = new URLSearchParams({ page, size });
-
-  const res = await fetch(`${BASE_URL}/admin/inspectors?${params}`, {
-    headers: authHeaders(),
-  });
-  const data = await res.json();
-  if (!res.ok || !data.success) throw new Error(data.message || "KhÃ´ng thá»ƒ táº£i danh sÃ¡ch kiá»ƒm Ä‘á»‹nh viÃªn.");
-  return data;
-}
-
 export async function updateUserStatusAPI(userId, status) {
   const res = await fetch(`${BASE_URL}/admin/users/${userId}/status`, {
     method: "PUT",

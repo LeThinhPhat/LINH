@@ -115,7 +115,7 @@ function CategoryModal({ initial, onClose, onSaved }: CategoryModalProps) {
           <h2 className="text-lg font-bold text-gray-900">
             {initial ? "Chỉnh sửa danh mục" : "Thêm danh mục mới"}
           </h2>
-          <button type="button" onClick={onClose} className="rounded-lg hover:bg-gray-100 p-1">
+          <button type="button" onClick={onClose} className="rounded-lg hover:bg-blue-50 p-1">
             <X size={18} className="text-gray-500" />
           </button>
         </div>
@@ -170,14 +170,14 @@ function CategoryModal({ initial, onClose, onSaved }: CategoryModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-gray-200 px-4 py-2 text-sm hover:bg-gray-50"
+              className="rounded-xl border border-gray-200 px-4 py-2 text-sm hover:bg-blue-50"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="rounded-xl bg-gray-900 text-white px-4 py-2 text-sm hover:bg-gray-700 disabled:opacity-50"
+              className="rounded-xl bg-blue-700 text-white px-4 py-2 text-sm hover:bg-blue-800 disabled:opacity-50"
             >
               {saving ? "Đang lưu..." : initial ? "Cập nhật" : "Thêm mới"}
             </button>
@@ -269,14 +269,14 @@ export default function ManagerCategories() {
           <button
             type="button"
             onClick={fetchCategories}
-            className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-50"
+            className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium hover:bg-blue-50"
           >
             <RefreshCw size={14} /> Làm mới
           </button>
           <button
             type="button"
             onClick={openAdd}
-            className="inline-flex items-center gap-2 rounded-xl bg-gray-900 text-white px-4 py-2 text-sm font-medium hover:bg-gray-700"
+            className="inline-flex items-center gap-2 rounded-xl bg-blue-700 text-white px-4 py-2 text-sm font-medium hover:bg-blue-800"
           >
             <Plus size={14} /> Thêm danh mục
           </button>
@@ -286,8 +286,8 @@ export default function ManagerCategories() {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="rounded-2xl bg-white border border-gray-200 p-4 flex items-center gap-3">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100">
-            <Tag size={20} className="text-gray-700" />
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100">
+            <Tag size={20} className="text-blue-700" />
           </span>
           <div>
             {loading ? (
@@ -341,7 +341,7 @@ export default function ManagerCategories() {
             </thead>
             <tbody>
               {filtered.map((cat) => (
-                <tr key={cat.id} className="border-b border-gray-50 hover:bg-gray-50">
+                <tr key={cat.id} className="border-b border-gray-50 hover:bg-blue-50">
                   <td className="px-5 py-3 text-gray-400">#{cat.id}</td>
                   <td className="px-5 py-3">
                     {cat.imgUrl ? (
@@ -418,7 +418,7 @@ export default function ManagerCategories() {
             type="button"
             disabled={page === 0}
             onClick={() => setPage((p) => p - 1)}
-            className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
+            className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-gray-600 hover:bg-blue-50 disabled:opacity-40"
           >
             <ChevronLeft size={14} /> Trước
           </button>
@@ -426,7 +426,7 @@ export default function ManagerCategories() {
             type="button"
             disabled={page >= totalPages - 1}
             onClick={() => setPage((p) => p + 1)}
-            className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
+            className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-gray-600 hover:bg-blue-50 disabled:opacity-40"
           >
             Sau <ChevronRight size={14} />
           </button>
