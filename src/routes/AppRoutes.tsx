@@ -17,11 +17,22 @@ import Login from "../components/home/Login";
 import Register from "../components/home/Register";
 import GuestLayout from "../components/home/Layout";
 import SellerPage from "../components/Seller/SellerPage";
-import InspectorPage from "../components/Inspector/InspectorPage";
+import InspectorLayout from "../components/Inspector/InspectorLayout";
+import InspectorDashboard from "../components/Inspector/InspectorDashboard";
+import ManagerInspection from "../components/Inspector/ManagerInspection";
+import ManagerInspectionStatus from "../components/Inspector/ManagerInspectionStatus";
+import ManagerInspectionReport from "../components/Inspector/ManagerInspectionReport";
+import CreateReport from "../components/Inspector/CreateReport";
 import BuyerPage from "../components/Buyer/BuyerPage";
 
 // ─── PrivateRoute ────────────────────────────────────────────────────────────
-function PrivateRoute({ redirectTo = "/login", roles = [] }: { redirectTo?: string; roles?: string[] }) {
+function PrivateRoute({
+  redirectTo = "/login",
+  roles = [],
+}: {
+  redirectTo?: string;
+  roles?: string[];
+}) {
   const user = (() => {
     try {
       return JSON.parse(localStorage.getItem("user") || "null");
@@ -31,7 +42,8 @@ function PrivateRoute({ redirectTo = "/login", roles = [] }: { redirectTo?: stri
   })();
 
   if (!user) return <Navigate to={redirectTo} replace />;
-  if (roles.length > 0 && !roles.includes(user.role)) return <Navigate to="/login" replace />;
+  if (roles.length > 0 && !roles.includes(user.role))
+    return <Navigate to="/login" replace />;
   return <Outlet />;
 }
 
@@ -70,7 +82,10 @@ export default function AppRoutes({ user, onLogout }: AppRoutesProps) {
 
       {/* Admin — protected */}
       <Route element={<PrivateRoute roles={["ADMIN"]} />}>
-        <Route path="/admin" element={<AdminLayout user={user} onLogout={onLogout} />}>
+        <Route
+          path="/admin"
+          element={<AdminLayout user={user} onLogout={onLogout} />}
+        >
           <Route index element={<AdminDashboard />} />
           <Route path="posts" element={<ManagerPosts />} />
           <Route path="staff" element={<ManagerStaff />} />
@@ -94,7 +109,13 @@ export default function AppRoutes({ user, onLogout }: AppRoutesProps) {
 
       {/* Inspector — protected */}
       <Route element={<PrivateRoute roles={["INSPECTOR"]} />}>
-        <Route path="/inspector" element={<InspectorPage />} />
+        <Route path="/inspector" element={<InspectorLayout user={user} onLogout={onLogout} />}>
+          <Route index element={<InspectorDashboard />} />
+          <Route path="inspections" element={<ManagerInspection />} />
+          <Route path="status" element={<ManagerInspectionStatus />} />
+          <Route path="reports" element={<ManagerInspectionReport />} />
+          <Route path="create-report" element={<CreateReport />} />
+        </Route>
       </Route>
 
       {/* Buyer — protected */}
