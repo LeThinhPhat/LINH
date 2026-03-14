@@ -13,6 +13,7 @@ import {
   UserCog,
   Tag,
   Cpu,
+  AlertTriangle,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -59,6 +60,7 @@ export default function AdminSidebar({
       { to: "/admin/categories", label: "Quản Lý Danh Mục", key: "categories", icon: Tag },
       { to: "/admin/brands", label: "Quản Lý Thương Hiệu", key: "brands", icon: Tag },
       { to: "/admin/components", label: "Quản Lý Linh Kiện", key: "components", icon: Cpu },
+      { to: "/admin/disputes", label: "Quản Lý Khiếu Nại", key: "disputes", icon: AlertTriangle },
     ],
     [],
   );

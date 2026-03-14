@@ -13,6 +13,7 @@ import ManagerUsers from "../components/Admin/Manager/ManagerUsers";
 import ManagerCategories from "../components/Admin/Manager/ManagerCategories";
 import ManagerBrand from "../components/Admin/Manager/ManagerBrand";
 import ManagerComponent from "../components/Admin/Manager/ManagerComponent";
+import ManagementDisputes from "../components/Admin/Manager/ManagementDisputes";
 import Login from "../components/home/Login";
 import Register from "../components/home/Register";
 import GuestLayout from "../components/home/Layout";
@@ -99,6 +100,7 @@ export default function AppRoutes({ user, onLogout }: AppRoutesProps) {
           <Route path="categories" element={<ManagerCategories />} />
           <Route path="brands" element={<ManagerBrand />} />
           <Route path="components" element={<ManagerComponent />} />
+          <Route path="disputes" element={<ManagementDisputes />} />
         </Route>
       </Route>
 
