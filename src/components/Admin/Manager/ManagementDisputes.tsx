@@ -1,5 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
-import { Search, AlertTriangle, ShoppingBag, RefreshCw, Eye, X, CheckCircle, XCircle } from "lucide-react";
+import {
+  Search,
+  AlertTriangle,
+  ShoppingBag,
+  RefreshCw,
+  Eye,
+  X,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
 import {
   getPendingDisputesAPI,
   resolveDisputeAPI,
@@ -15,7 +24,9 @@ type OrderStatus =
   | "COMPLETED"
   | "CANCELLED"
   | "RETURN_REQUESTED"
-  | "RETURNED";
+  | "RETURNED"
+  | "REFUNDED"
+  | "ESCROWED";
 
 interface UserInfo {
   id: number;
@@ -77,14 +88,22 @@ interface Dispute {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const ORDER_STATUS_LABEL: Record<OrderStatus, { label: string; color: string }> = {
+const ORDER_STATUS_LABEL: Record<
+  OrderStatus,
+  { label: string; color: string }
+> = {
   PENDING: { label: "Chờ xác nhận", color: "bg-yellow-100 text-yellow-700" },
   CONFIRMED: { label: "Đã xác nhận", color: "bg-blue-100 text-blue-700" },
   DELIVERED: { label: "Đã giao", color: "bg-purple-100 text-purple-700" },
   COMPLETED: { label: "Hoàn thành", color: "bg-green-100 text-green-700" },
   CANCELLED: { label: "Đã hủy", color: "bg-gray-100 text-gray-600" },
-  RETURN_REQUESTED: { label: "Yêu cầu hoàn trả", color: "bg-orange-100 text-orange-700" },
+  RETURN_REQUESTED: {
+    label: "Yêu cầu hoàn trả",
+    color: "bg-orange-100 text-orange-700",
+  },
   RETURNED: { label: "Đã hoàn trả", color: "bg-red-100 text-red-700" },
+  REFUNDED: { label: "Đã hoàn tiền", color: "bg-pink-100 text-pink-700" },
+  ESCROWED: { label: "Đang giữ tiền", color: "bg-indigo-100 text-indigo-700" },
 };
 
 function formatDate(value: string | null | undefined) {
@@ -106,7 +125,13 @@ interface DetailModalProps {
   actionLoading: boolean;
 }
 
-function DetailModal({ dispute, onClose, onResolve, onReject, actionLoading }: DetailModalProps) {
+function DetailModal({
+  dispute,
+  onClose,
+  onResolve,
+  onReject,
+  actionLoading,
+}: DetailModalProps) {
   const { order } = dispute;
   const statusInfo = ORDER_STATUS_LABEL[order.status] ?? {
     label: order.status,
@@ -131,7 +156,10 @@ function DetailModal({ dispute, onClose, onResolve, onReject, actionLoading }: D
           </button>
         </div>
 
-        <div className="space-y-5 overflow-y-auto px-6 py-5" style={{ maxHeight: "70vh" }}>
+        <div
+          className="space-y-5 overflow-y-auto px-6 py-5"
+          style={{ maxHeight: "70vh" }}
+        >
           {/* Bike info */}
           <div className="flex gap-4 rounded-xl border border-gray-100 bg-gray-50 p-4">
             {thumbUrl && (
@@ -142,19 +170,25 @@ function DetailModal({ dispute, onClose, onResolve, onReject, actionLoading }: D
               />
             )}
             <div className="min-w-0">
-              <p className="font-semibold text-gray-900 truncate">{order.bike.title}</p>
+              <p className="font-semibold text-gray-900 truncate">
+                {order.bike.title}
+              </p>
               <p className="text-sm text-gray-500">
                 {order.bike.brand.name} · {order.bike.model} · {order.bike.year}
               </p>
               <p className="text-sm text-gray-500">{order.bike.location}</p>
-              <p className="mt-1 text-sm font-medium text-blue-700">{formatPoints(order.amountPoints)}</p>
+              <p className="mt-1 text-sm font-medium text-blue-700">
+                {formatPoints(order.amountPoints)}
+              </p>
             </div>
           </div>
 
           {/* Order status */}
           <div className="flex items-center gap-3">
             <span className="text-sm text-gray-500">Trạng thái đơn hàng:</span>
-            <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusInfo.color}`}>
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusInfo.color}`}
+            >
               {statusInfo.label}
             </span>
           </div>
@@ -162,18 +196,28 @@ function DetailModal({ dispute, onClose, onResolve, onReject, actionLoading }: D
           {/* Buyer / Seller */}
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-xl border border-gray-100 p-4">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Người mua</p>
-              <p className="font-medium text-gray-900">{order.buyer.fullName}</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                Người mua
+              </p>
+              <p className="font-medium text-gray-900">
+                {order.buyer.fullName}
+              </p>
               <p className="text-xs text-gray-500">{order.buyer.email}</p>
               <p className="text-xs text-gray-500">{order.buyer.phone}</p>
             </div>
             <div className="rounded-xl border border-gray-100 p-4">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Người bán</p>
-              <p className="font-medium text-gray-900">{order.bike.seller.fullName}</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                Người bán
+              </p>
+              <p className="font-medium text-gray-900">
+                {order.bike.seller.fullName}
+              </p>
               <p className="text-xs text-gray-500">{order.bike.seller.email}</p>
               <p className="text-xs text-gray-500">{order.bike.seller.phone}</p>
               {order.bike.seller.shopName && (
-                <p className="text-xs text-blue-600">{order.bike.seller.shopName}</p>
+                <p className="text-xs text-blue-600">
+                  {order.bike.seller.shopName}
+                </p>
               )}
             </div>
           </div>
@@ -201,8 +245,12 @@ function DetailModal({ dispute, onClose, onResolve, onReject, actionLoading }: D
           {/* Dates */}
           <div className="flex gap-6 text-sm text-gray-500">
             <span>Đơn tạo: {formatDate(order.createdAt)}</span>
-            {order.deliveredAt && <span>Giao hàng: {formatDate(order.deliveredAt)}</span>}
-            {dispute.createdAt && <span>Khiếu nại: {formatDate(dispute.createdAt)}</span>}
+            {order.deliveredAt && (
+              <span>Giao hàng: {formatDate(order.deliveredAt)}</span>
+            )}
+            {dispute.createdAt && (
+              <span>Khiếu nại: {formatDate(dispute.createdAt)}</span>
+            )}
           </div>
         </div>
 
@@ -239,7 +287,10 @@ export default function ManagementDisputes() {
   const [search, setSearch] = useState("");
   const [selectedDispute, setSelectedDispute] = useState<Dispute | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
-  const [toast, setToast] = useState<{ type: "success" | "error"; msg: string } | null>(null);
+  const [toast, setToast] = useState<{
+    type: "success" | "error";
+    msg: string;
+  } | null>(null);
 
   const showToast = (type: "success" | "error", msg: string) => {
     setToast({ type, msg });
@@ -307,7 +358,7 @@ export default function ManagementDisputes() {
   });
 
   const returnRequestedCount = disputes.filter(
-    (d) => d.order.status === "RETURN_REQUESTED"
+    (d) => d.order.status === "RETURN_REQUESTED",
   ).length;
 
   return (
@@ -316,7 +367,9 @@ export default function ManagementDisputes() {
       {toast && (
         <div
           className={`fixed right-4 top-4 z-50 rounded-xl px-4 py-3 text-sm font-medium shadow-lg ${
-            toast.type === "success" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"
+            toast.type === "success"
+              ? "bg-emerald-600 text-white"
+              : "bg-red-600 text-white"
           }`}
         >
           {toast.msg}
@@ -337,7 +390,9 @@ export default function ManagementDisputes() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản Lý Khiếu Nại</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Quản Lý Khiếu Nại
+          </h1>
           <p className="mt-1 text-sm text-gray-500">
             Danh sách khiếu nại đang chờ xử lý trong hệ thống
           </p>
@@ -354,12 +409,32 @@ export default function ManagementDisputes() {
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {[
-          { label: "Tổng khiếu nại chờ xử lý", value: disputes.length, icon: AlertTriangle, color: "bg-orange-100 text-orange-700" },
-          { label: "Yêu cầu hoàn trả", value: returnRequestedCount, icon: ShoppingBag, color: "bg-red-100 text-red-700" },
-          { label: "Kết quả tìm kiếm", value: filtered.length, icon: Search, color: "bg-blue-100 text-blue-700" },
+          {
+            label: "Tổng khiếu nại chờ xử lý",
+            value: disputes.length,
+            icon: AlertTriangle,
+            color: "bg-orange-100 text-orange-700",
+          },
+          {
+            label: "Yêu cầu hoàn trả",
+            value: returnRequestedCount,
+            icon: ShoppingBag,
+            color: "bg-red-100 text-red-700",
+          },
+          {
+            label: "Kết quả tìm kiếm",
+            value: filtered.length,
+            icon: Search,
+            color: "bg-blue-100 text-blue-700",
+          },
         ].map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white p-4">
-            <span className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${color}`}>
+          <div
+            key={label}
+            className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white p-4"
+          >
+            <span
+              className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${color}`}
+            >
               <Icon size={20} />
             </span>
             <div>
@@ -386,11 +461,17 @@ export default function ManagementDisputes() {
       {/* Table */}
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
         {loading ? (
-          <div className="px-5 py-10 text-center text-sm text-gray-400">Đang tải...</div>
+          <div className="px-5 py-10 text-center text-sm text-gray-400">
+            Đang tải...
+          </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center gap-3 px-5 py-10">
             <p className="text-sm text-red-500">{error}</p>
-            <button type="button" onClick={fetchDisputes} className="text-sm text-gray-600 underline">
+            <button
+              type="button"
+              onClick={fetchDisputes}
+              className="text-sm text-gray-600 underline"
+            >
               Thử lại
             </button>
           </div>
@@ -418,8 +499,13 @@ export default function ManagementDisputes() {
                 const thumbUrl = order.bike.media?.[0]?.url;
 
                 return (
-                  <tr key={dispute.id} className="border-b border-gray-50 hover:bg-blue-50">
-                    <td className="px-5 py-3 font-medium text-gray-500">#{dispute.id}</td>
+                  <tr
+                    key={dispute.id}
+                    className="border-b border-gray-50 hover:bg-blue-50"
+                  >
+                    <td className="px-5 py-3 font-medium text-gray-500">
+                      #{dispute.id}
+                    </td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-2">
                         {thumbUrl && (
@@ -440,22 +526,34 @@ export default function ManagementDisputes() {
                       </div>
                     </td>
                     <td className="px-5 py-3">
-                      <div className="font-medium text-gray-900">{order.buyer.fullName}</div>
-                      <div className="text-xs text-gray-400">{order.buyer.email}</div>
+                      <div className="font-medium text-gray-900">
+                        {order.buyer.fullName}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {order.buyer.email}
+                      </div>
                     </td>
                     <td className="px-5 py-3">
-                      <div className="font-medium text-gray-900">{order.bike.seller.fullName}</div>
-                      <div className="text-xs text-gray-400">{order.bike.seller.shopName ?? order.bike.seller.email}</div>
+                      <div className="font-medium text-gray-900">
+                        {order.bike.seller.fullName}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {order.bike.seller.shopName ?? order.bike.seller.email}
+                      </div>
                     </td>
                     <td className="px-5 py-3 text-right font-semibold text-gray-900">
                       {formatPoints(order.amountPoints)}
                     </td>
                     <td className="px-5 py-3">
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusInfo.color}`}>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusInfo.color}`}
+                      >
                         {statusInfo.label}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-gray-500">{formatDate(order.createdAt)}</td>
+                    <td className="px-5 py-3 text-gray-500">
+                      {formatDate(order.createdAt)}
+                    </td>
                     <td className="px-5 py-3 text-center">
                       <button
                         type="button"
@@ -470,7 +568,10 @@ export default function ManagementDisputes() {
               })}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-5 py-8 text-center text-gray-400">
+                  <td
+                    colSpan={8}
+                    className="px-5 py-8 text-center text-gray-400"
+                  >
                     Không có khiếu nại nào chờ xử lý
                   </td>
                 </tr>
